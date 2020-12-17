@@ -54,6 +54,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	FRotator HeadRotation;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	FRotator TorsoRotation;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = IK)
 	float Scale;
 
@@ -105,6 +108,8 @@ protected:
 	void UpdateHandIK();
 
 	void RotateHead(float DeltaTime);
+
+	void RotateTorso(float DeltaTime);
 
 	void UpperBodyCheck();
 

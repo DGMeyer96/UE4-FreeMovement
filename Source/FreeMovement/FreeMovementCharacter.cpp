@@ -96,6 +96,7 @@ void AFreeMovementCharacter::BeginPlay()
 void AFreeMovementCharacter::Tick(float DeltaTime)
 {
 	RotateHead(DeltaTime);
+	RotateTorso(DeltaTime);
 	UpdateFootIK(DeltaTime);
 	UpdateHandIK();
 
@@ -296,6 +297,14 @@ void AFreeMovementCharacter::RotateHead(float DeltaTime)
 	float target = GetControlRotation().Yaw - GetActorRotation().Yaw;
 	HeadRotation.Yaw = FMath::ClampAngle(target, -90.f, 90.f);	//Head look Left/Right
 	HeadRotation.Roll = 0.f - GetControlRotation().Pitch;	//Head Look Up/Down
+}
+
+void AFreeMovementCharacter::RotateTorso(float DeltaTime)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Turn Axis Value %f"), GetInputAxisValue("Turn"));
+	float target = FMath::ClampAngle(GetInputAxisValue("Turn") * 10.f, -15.f, 15.f);
+	TorsoRotation.Yaw = target;	//Torso left/right look
+	TorsoRotation.Pitch = FMath::FInterpTo(TorsoRotation.Pitch, target, DeltaTime, 5.f);	//Torso left/right lean
 }
 
 void AFreeMovementCharacter::UpperBodyCheck()
