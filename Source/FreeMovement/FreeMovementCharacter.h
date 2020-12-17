@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Components/TimelineComponent.h"
 #include "FreeMovementCharacter.generated.h"
 
 UCLASS(config=Game)
@@ -90,6 +91,17 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = IK)
 	bool bRightHandHitWall;
 
+	UPROPERTY()
+	FTimeline GravityCurveTimeline;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gravity)
+	UCurveFloat* GravityCurveFloat;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gravity)
+	float FallingGravityScale;
+
+public:
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 	class USoundBase* Footstep;
 
@@ -117,9 +129,17 @@ protected:
 
 	bool HeightCheck(FVector TraceStart, FVector TraceEnd);
 
+	void GravityTimelineHandler(float Value);
+
 protected:
 
-	void OnStartJump();
+	void OnJumpPressed();
+
+	void OnJumpReleased();
+
+	virtual void Landed(const FHitResult& Hit) override;
+
+	void IsFallingCheck();
 
 	void WallRunCheck();
 

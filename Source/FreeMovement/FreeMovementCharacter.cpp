@@ -40,6 +40,11 @@ AFreeMovementCharacter::AFreeMovementCharacter()
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+	CameraBoom->bEnableCameraLag = true;
+	CameraBoom->bEnableCameraRotationLag = true;
+	CameraBoom->CameraLagSpeed = 10.f;
+	CameraBoom->CameraRotationLagSpeed = 20.f;
+	CameraBoom->CameraLagMaxDistance = 0.f;
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -59,6 +64,8 @@ AFreeMovementCharacter::AFreeMovementCharacter()
 
 	LongFallDistance = 500.f;
 
+	FallingGravityScale = 4.5f;
+
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 }
 
@@ -70,8 +77,8 @@ void AFreeMovementCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
 	//PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AFreeMovementCharacter::OnStartJump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AFreeMovementCharacter::OnJumpPressed);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &AFreeMovementCharacter::OnJumpReleased);
 
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AFreeMovementCharacter::SprintStart);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AFreeMovementCharacter::SprintStop);
@@ -91,10 +98,19 @@ void AFreeMovementCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 void AFreeMovementCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (GravityCurveFloat)
+	{
+		FOnTimelineFloat JumpProgressFunction;
+		JumpProgressFunction.BindUFunction(this, "GravityTimelineHandler");
+
+		GravityCurveTimeline.AddInterpFloat(GravityCurveFloat, JumpProgressFunction);
+	}
 }
 
 void AFreeMovementCharacter::Tick(float DeltaTime)
 {
+	IsFallingCheck();
 	RotateHead(DeltaTime);
 	RotateTorso(DeltaTime);
 	UpdateFootIK(DeltaTime);
@@ -103,7 +119,7 @@ void AFreeMovementCharacter::Tick(float DeltaTime)
 	//UpperBodyCheck();
 	//LowerBodyCheck();
 	
-
+	/*
 	if (GetMovementComponent()->IsFalling())
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("In Air"));
@@ -123,12 +139,14 @@ void AFreeMovementCharacter::Tick(float DeltaTime)
 		GetCharacterMovement()->GravityScale = 1.5f;
 		DistanceFallen = 0.f;
 	}
-	
+	*/
 	Super::Tick(DeltaTime);
 }
 
-void AFreeMovementCharacter::OnStartJump()
+void AFreeMovementCharacter::OnJumpPressed()
 {
+	Super::Jump();
+
 	UE_LOG(LogTemp, Warning, TEXT("Start Jump"));
 
 	if(GetMovementComponent()->IsFalling())
@@ -141,7 +159,34 @@ void AFreeMovementCharacter::OnStartJump()
 		//LowerBodyCheck();
 	}
 
-	Super::Jump();
+	GravityCurveTimeline.PlayFromStart();
+}
+
+void AFreeMovementCharacter::OnJumpReleased()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Stop Jump"));
+
+	GetCharacterMovement()->GravityScale = FallingGravityScale;
+	GravityCurveTimeline.Stop();
+
+	Super::StopJumping();
+}
+
+void AFreeMovementCharacter::Landed(const FHitResult& Hit)
+{
+	//Player has landed on the ground return gravity to normal
+	GetCharacterMovement()->GravityScale = 1.f;
+
+	Super::Landed(Hit);
+}
+
+void AFreeMovementCharacter::IsFallingCheck()
+{
+	//Check if the character is falling down, used for checking if the player didn't jump but walked off the edge
+	if (GetCharacterMovement()->IsFalling() && (GetVelocity().Z < 0.f))
+	{
+		GetCharacterMovement()->GravityScale = FallingGravityScale;
+	}
 }
 
 void AFreeMovementCharacter::WallRunCheck()
@@ -301,7 +346,7 @@ void AFreeMovementCharacter::RotateHead(float DeltaTime)
 
 void AFreeMovementCharacter::RotateTorso(float DeltaTime)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Turn Axis Value %f"), GetInputAxisValue("Turn"));
+	//UE_LOG(LogTemp, Warning, TEXT("Turn Axis Value %f"), GetInputAxisValue("Turn"));
 	float target = FMath::ClampAngle(GetInputAxisValue("Turn") * 10.f, -15.f, 15.f);
 	TorsoRotation.Yaw = target;	//Torso left/right look
 	TorsoRotation.Pitch = FMath::FInterpTo(TorsoRotation.Pitch, target, DeltaTime, 5.f);	//Torso left/right lean
@@ -364,4 +409,9 @@ bool AFreeMovementCharacter::HeightCheck(FVector TraceStart, FVector TraceEnd)
 	//Check to see if the object is taller than max grab point
 	//Returns true if the wall is too high, false if climbable
 	return GetWorld()->LineTraceSingleByChannel(hit, TraceStart + FVector(0.f, 0.f, 1.f), TraceEnd + FVector(0.f, 0.f, 1.f), ECollisionChannel::ECC_Visibility, queryParam);
+}
+
+void AFreeMovementCharacter::GravityTimelineHandler(float Value)
+{
+	GetCharacterMovement()->GravityScale = Value;
 }
