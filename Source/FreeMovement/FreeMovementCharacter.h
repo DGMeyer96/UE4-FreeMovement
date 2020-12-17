@@ -87,6 +87,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = IK)
 	bool bRightHandHitWall;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	class USoundBase* Footstep;
+
 protected:
 	virtual void BeginPlay();
 
