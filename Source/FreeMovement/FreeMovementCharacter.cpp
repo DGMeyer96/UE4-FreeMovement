@@ -45,11 +45,14 @@ AFreeMovementCharacter::AFreeMovementCharacter()
 	CameraBoom->CameraLagSpeed = 10.f;
 	CameraBoom->CameraRotationLagSpeed = 20.f;
 	CameraBoom->CameraLagMaxDistance = 0.f;
+	CameraBoom->CameraLagMaxDistance = 50.f;
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+	DefaultFOV = 90.f;
+	FollowCamera->FieldOfView = DefaultFOV;
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
@@ -197,13 +200,19 @@ void AFreeMovementCharacter::WallRunCheck()
 void AFreeMovementCharacter::SprintStart()
 {
 	GetCharacterMovement()->MaxWalkSpeed = SprintWalkSpeed;
-	UE_LOG(LogTemp, Warning, TEXT("MaxWalkSpeed = %f"), GetCharacterMovement()->MaxWalkSpeed);
+	//CameraBoom->bEnableCameraLag = false;
+	//CameraBoom->CameraLagSpeed = 0.f;
+	//FollowCamera->FieldOfView = DefaultFOV * 1.2f;
+	//UE_LOG(LogTemp, Warning, TEXT("MaxWalkSpeed = %f"), GetCharacterMovement()->MaxWalkSpeed);
 }
 
 void AFreeMovementCharacter::SprintStop()
 {
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
-	UE_LOG(LogTemp, Warning, TEXT("MaxWalkSpeed = %f"), GetCharacterMovement()->MaxWalkSpeed);
+	//CameraBoom->bEnableCameraLag = true;
+	//CameraBoom->CameraLagSpeed = 10.f;
+	//FollowCamera->FieldOfView = DefaultFOV;
+	//UE_LOG(LogTemp, Warning, TEXT("MaxWalkSpeed = %f"), GetCharacterMovement()->MaxWalkSpeed);
 }
 
 void AFreeMovementCharacter::TurnAtRate(float Rate)

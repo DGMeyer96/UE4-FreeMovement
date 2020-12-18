@@ -46,6 +46,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	float DefaultFOV;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 	float LongFallDistance;
 
