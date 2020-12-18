@@ -122,14 +122,15 @@ void AFreeMovementCharacter::Tick(float DeltaTime)
 	//UpperBodyCheck();
 	//LowerBodyCheck();
 	
-	/*
+	
 	if (GetMovementComponent()->IsFalling())
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("In Air"));
 		if (GetVelocity().Z < 0.f)
 		{
-			GetCharacterMovement()->GravityScale = 3.f;
-			UE_LOG(LogTemp, Warning, TEXT("Falling %f"), GetCharacterMovement()->GetGravityZ());
+			//GetCharacterMovement()->GravityScale = 3.f;
+			//UE_LOG(LogTemp, Warning, TEXT("Falling %f"), GetCharacterMovement()->GetGravityZ());
+			UE_LOG(LogTemp, Warning, TEXT("Falling %f"), GetVelocity().Z);
 		}
 		else
 		{
@@ -139,10 +140,10 @@ void AFreeMovementCharacter::Tick(float DeltaTime)
 	}
 	else 
 	{
-		GetCharacterMovement()->GravityScale = 1.5f;
+		//GetCharacterMovement()->GravityScale = 1.5f;
 		DistanceFallen = 0.f;
 	}
-	*/
+	
 	Super::Tick(DeltaTime);
 }
 

@@ -2,8 +2,8 @@
 
 
 #include "FreeMovement/Notifies/GenerateFootstepSound.h"
-#include "Kismet/GameplayStatics.h"
 #include "FreeMovement/FreeMovementCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 void UGenerateFootstepSound::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
