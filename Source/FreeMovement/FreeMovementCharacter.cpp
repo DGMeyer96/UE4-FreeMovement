@@ -67,9 +67,11 @@ AFreeMovementCharacter::AFreeMovementCharacter()
 
 	LongFallDistance = 500.f;
 
-	FallingGravityScale = 4.5f;
+	FallingGravityScale = 3.5f;
 
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+
+	bCanJump = true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -116,8 +118,8 @@ void AFreeMovementCharacter::Tick(float DeltaTime)
 	IsFallingCheck();
 	RotateHead(DeltaTime);
 	RotateTorso(DeltaTime);
-	UpdateFootIK(DeltaTime);
-	UpdateHandIK();
+	//UpdateFootIK(DeltaTime);
+	//UpdateHandIK();
 
 	//UpperBodyCheck();
 	//LowerBodyCheck();
@@ -130,40 +132,45 @@ void AFreeMovementCharacter::Tick(float DeltaTime)
 		{
 			//GetCharacterMovement()->GravityScale = 3.f;
 			//UE_LOG(LogTemp, Warning, TEXT("Falling %f"), GetCharacterMovement()->GetGravityZ());
-			UE_LOG(LogTemp, Warning, TEXT("Falling %f"), GetVelocity().Z);
+			//UE_LOG(LogTemp, Warning, TEXT("Falling %f"), GetVelocity().Z);
+			//bCanJump = false;
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Rising"));
+			//UE_LOG(LogTemp, Warning, TEXT("Rising"));
 			//GetCharacterMovement()->GravityScale = 1.f;
+			//bCanJump = true;
 		}
 	}
 	else 
 	{
 		//GetCharacterMovement()->GravityScale = 1.5f;
-		DistanceFallen = 0.f;
 	}
 	
+
 	Super::Tick(DeltaTime);
 }
 
 void AFreeMovementCharacter::OnJumpPressed()
 {
-	Super::Jump();
-
-	UE_LOG(LogTemp, Warning, TEXT("Start Jump"));
-
-	if(GetMovementComponent()->IsFalling())
+	if (bCanJump)
 	{
-		//WallRunCheck();
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Vault Check"));
-		//LowerBodyCheck();
-	}
+		Super::Jump();
 
-	GravityCurveTimeline.PlayFromStart();
+		UE_LOG(LogTemp, Warning, TEXT("Start Jump"));
+
+		if (GetMovementComponent()->IsFalling())
+		{
+			//WallRunCheck();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Vault Check"));
+			//LowerBodyCheck();
+		}
+
+		GravityCurveTimeline.PlayFromStart();
+	}
 }
 
 void AFreeMovementCharacter::OnJumpReleased()
@@ -201,19 +208,11 @@ void AFreeMovementCharacter::WallRunCheck()
 void AFreeMovementCharacter::SprintStart()
 {
 	GetCharacterMovement()->MaxWalkSpeed = SprintWalkSpeed;
-	//CameraBoom->bEnableCameraLag = false;
-	//CameraBoom->CameraLagSpeed = 0.f;
-	//FollowCamera->FieldOfView = DefaultFOV * 1.2f;
-	//UE_LOG(LogTemp, Warning, TEXT("MaxWalkSpeed = %f"), GetCharacterMovement()->MaxWalkSpeed);
 }
 
 void AFreeMovementCharacter::SprintStop()
 {
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
-	//CameraBoom->bEnableCameraLag = true;
-	//CameraBoom->CameraLagSpeed = 10.f;
-	//FollowCamera->FieldOfView = DefaultFOV;
-	//UE_LOG(LogTemp, Warning, TEXT("MaxWalkSpeed = %f"), GetCharacterMovement()->MaxWalkSpeed);
 }
 
 void AFreeMovementCharacter::TurnAtRate(float Rate)
@@ -318,7 +317,7 @@ void AFreeMovementCharacter::IKHandTrace(FName SocketName, float TraceDistance, 
 
 void AFreeMovementCharacter::UpdateFootIK(float DeltaTime)
 {
-	FVector hitLocationLeft, hitLocationRight;
+	FVector hitLocationLeft, hitLocationLeft2, hitLocationRight, hitLocationRight2;
 	float footTraceOffset;
 
 	IKFootTrace("LeftFootIKSocket", IKFootTraceDistance, hitLocationLeft, footTraceOffset);

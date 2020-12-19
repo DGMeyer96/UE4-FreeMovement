@@ -29,6 +29,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 	float MoveRightInput;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement)
+	bool bCanJump;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 	bool bClimbing;
 
@@ -80,7 +83,13 @@ public:
 	float IKLeftFootOffset;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = IK)
+	float IKLeftFootRotation;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = IK)
 	float IKRightFootOffset;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = IK)
+	float IKRightFootRotation;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = IK)
 	FVector IKLeftHandLocation;
@@ -114,7 +123,7 @@ protected:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void IKFootTrace(FName SocketName, float TraceDistance, FVector &Out_HitLocation, float &Out_FootTraceOffset);
+	void IKFootTrace(FName SocketName, float TraceDistance, FVector &Out_HitLocation,float &Out_FootTraceOffset);
 
 	void IKHandTrace(FName SocketName, float TraceDistance, float HandOffset, FVector& Out_HitLocation, bool& Out_HitWall);
 
