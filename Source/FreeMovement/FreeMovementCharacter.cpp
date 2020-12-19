@@ -155,7 +155,7 @@ void AFreeMovementCharacter::OnJumpPressed()
 {
 	if (bCanJump)
 	{
-		Super::Jump();
+		//Super::Jump();
 
 		UE_LOG(LogTemp, Warning, TEXT("Start Jump"));
 
@@ -180,7 +180,7 @@ void AFreeMovementCharacter::OnJumpReleased()
 	GetCharacterMovement()->GravityScale = FallingGravityScale;
 	GravityCurveTimeline.Stop();
 
-	Super::StopJumping();
+	//Super::StopJumping();
 }
 
 void AFreeMovementCharacter::Landed(const FHitResult& Hit)
