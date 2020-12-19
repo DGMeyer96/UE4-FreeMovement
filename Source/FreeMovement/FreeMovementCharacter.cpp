@@ -34,6 +34,10 @@ AFreeMovementCharacter::AFreeMovementCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
+	GetCharacterMovement()->MaxAcceleration = 1024.f;
+	GetCharacterMovement()->BrakingFrictionFactor = 1.f;
+	GetCharacterMovement()->BrakingDecelerationWalking = 256.f;
+	GetCharacterMovement()->MaxFlySpeed = 0.f;	//This prevents the player from moving when on ledges
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -153,8 +157,8 @@ void AFreeMovementCharacter::Tick(float DeltaTime)
 
 void AFreeMovementCharacter::OnJumpPressed()
 {
-	if (bCanJump)
-	{
+	//if (bCanJump)
+	//{
 		//Super::Jump();
 
 		UE_LOG(LogTemp, Warning, TEXT("Start Jump"));
@@ -170,7 +174,7 @@ void AFreeMovementCharacter::OnJumpPressed()
 		}
 
 		GravityCurveTimeline.PlayFromStart();
-	}
+	//}
 }
 
 void AFreeMovementCharacter::OnJumpReleased()
