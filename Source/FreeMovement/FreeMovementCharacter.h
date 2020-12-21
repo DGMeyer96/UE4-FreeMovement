@@ -32,6 +32,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement)
 	bool bCanJump;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement)
+	bool bIsHanging;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 	bool bClimbing;
 

@@ -234,7 +234,7 @@ void AFreeMovementCharacter::LookUpAtRate(float Rate)
 void AFreeMovementCharacter::MoveForward(float Value)
 {
 	MoveForwardInput = Value;
-	if ((Controller != nullptr) && (Value != 0.0f))
+	if ( (Controller != nullptr) && (Value != 0.0f) && !bIsHanging )
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -249,7 +249,7 @@ void AFreeMovementCharacter::MoveForward(float Value)
 void AFreeMovementCharacter::MoveRight(float Value)
 {
 	MoveRightInput = Value;
-	if ( (Controller != nullptr) && (Value != 0.0f) )
+	if ( (Controller != nullptr) && (Value != 0.0f) && !bIsHanging )
 	{
 		// find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();
