@@ -133,17 +133,31 @@ void AFreeMovementCharacter::Tick(float DeltaTime)
 
 	UE_LOG(LogTemp, Warning, TEXT("Speed %f"), speed);
 
-	if ((speed > (BaseWalkSpeed + 50.f)) && (FollowCamera->FieldOfView > 75.f))
+	if (!GetMovementComponent()->IsFalling())
 	{
-		FollowCamera->FieldOfView = FMath::FInterpTo(FollowCamera->FieldOfView, 75.f, DeltaTime, 5.f);
-	}
-	else if (FollowCamera->FieldOfView < 90.f)
-	{
-		FollowCamera->FieldOfView = FMath::FInterpTo(FollowCamera->FieldOfView, 90.f, DeltaTime, 5.f);
-	}
+		/*
+		//Zoom in when sprinting
+		if ((speed > (BaseWalkSpeed + 50.f)) && (FollowCamera->FieldOfView > 75.f))
+		{
+			FollowCamera->FieldOfView = FMath::FInterpTo(FollowCamera->FieldOfView, 75.f, DeltaTime, 5.f);
+		}
+		else if (FollowCamera->FieldOfView < 90.f)
+		{
+			FollowCamera->FieldOfView = FMath::FInterpTo(FollowCamera->FieldOfView, 90.f, DeltaTime, 5.f);
+		}
+		*/
 
-	
-	if (GetMovementComponent()->IsFalling())
+		//Zoom out when sprinting
+		if ((speed > (BaseWalkSpeed + 50.f)) && (FollowCamera->FieldOfView < 105.f))
+		{
+			FollowCamera->FieldOfView = FMath::FInterpTo(FollowCamera->FieldOfView, 105.f, DeltaTime, 5.f);
+		}
+		else if (FollowCamera->FieldOfView > 90.f)
+		{
+			FollowCamera->FieldOfView = FMath::FInterpTo(FollowCamera->FieldOfView, 90.f, DeltaTime, 5.f);
+		}
+	}
+	else if (GetMovementComponent()->IsFalling())
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("In Air"));
 		if (GetVelocity().Z < 0.f)
