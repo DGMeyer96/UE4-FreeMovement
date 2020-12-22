@@ -42,7 +42,8 @@ AFreeMovementCharacter::AFreeMovementCharacter()
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
+	CameraBoom->SetRelativeLocation(FVector(0.f, 0.f, 50.f));	//Setup camera offset
+	CameraBoom->TargetArmLength = 250.0f; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 	CameraBoom->bEnableCameraLag = true;
 	CameraBoom->bEnableCameraRotationLag = true;
@@ -128,6 +129,19 @@ void AFreeMovementCharacter::Tick(float DeltaTime)
 	//UpperBodyCheck();
 	//LowerBodyCheck();
 	
+	float speed = GetVelocity().Size();	//Get velocity length = speed
+
+	UE_LOG(LogTemp, Warning, TEXT("Speed %f"), speed);
+
+	if ((speed > (BaseWalkSpeed + 50.f)) && (FollowCamera->FieldOfView > 75.f))
+	{
+		FollowCamera->FieldOfView = FMath::FInterpTo(FollowCamera->FieldOfView, 75.f, DeltaTime, 5.f);
+	}
+	else if (FollowCamera->FieldOfView < 90.f)
+	{
+		FollowCamera->FieldOfView = FMath::FInterpTo(FollowCamera->FieldOfView, 90.f, DeltaTime, 5.f);
+	}
+
 	
 	if (GetMovementComponent()->IsFalling())
 	{
