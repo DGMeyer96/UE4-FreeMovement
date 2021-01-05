@@ -30,6 +30,9 @@ public:
 	float MoveRightInput;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement)
+	bool bSprinting;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement)
 	bool bCanJump;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement)

@@ -77,6 +77,7 @@ AFreeMovementCharacter::AFreeMovementCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 
 	bCanJump = true;
+	bSprinting = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -148,11 +149,11 @@ void AFreeMovementCharacter::Tick(float DeltaTime)
 		*/
 
 		//Zoom out when sprinting
-		if ((speed > (BaseWalkSpeed + 50.f)) && (FollowCamera->FieldOfView < 105.f))
+		if (bSprinting && (speed > (BaseWalkSpeed + 50.f)) && (FollowCamera->FieldOfView < 105.f))
 		{
 			FollowCamera->FieldOfView = FMath::FInterpTo(FollowCamera->FieldOfView, 105.f, DeltaTime, 5.f);
 		}
-		else if (FollowCamera->FieldOfView > 90.f)
+		else if (!bSprinting && (FollowCamera->FieldOfView > 90.f))
 		{
 			FollowCamera->FieldOfView = FMath::FInterpTo(FollowCamera->FieldOfView, 90.f, DeltaTime, 5.f);
 		}
@@ -240,11 +241,13 @@ void AFreeMovementCharacter::WallRunCheck()
 void AFreeMovementCharacter::SprintStart()
 {
 	GetCharacterMovement()->MaxWalkSpeed = SprintWalkSpeed;
+	bSprinting = true;
 }
 
 void AFreeMovementCharacter::SprintStop()
 {
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+	bSprinting = false;
 }
 
 void AFreeMovementCharacter::TurnAtRate(float Rate)
