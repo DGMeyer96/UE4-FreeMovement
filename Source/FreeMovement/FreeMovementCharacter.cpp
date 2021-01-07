@@ -132,7 +132,7 @@ void AFreeMovementCharacter::Tick(float DeltaTime)
 	
 	float speed = GetVelocity().Size();	//Get velocity length = speed
 
-	UE_LOG(LogTemp, Warning, TEXT("Speed %f"), speed);
+	//UE_LOG(LogTemp, Warning, TEXT("Speed %f"), speed);
 
 	if (!GetMovementComponent()->IsFalling())
 	{
@@ -186,9 +186,9 @@ void AFreeMovementCharacter::Tick(float DeltaTime)
 
 void AFreeMovementCharacter::OnJumpPressed()
 {
-	//if (bCanJump)
-	//{
-		//Super::Jump();
+	if (bCanJump)
+	{
+		Super::Jump();
 
 		UE_LOG(LogTemp, Warning, TEXT("Start Jump"));
 
@@ -203,7 +203,7 @@ void AFreeMovementCharacter::OnJumpPressed()
 		}
 
 		GravityCurveTimeline.PlayFromStart();
-	//}
+	}
 }
 
 void AFreeMovementCharacter::OnJumpReleased()
@@ -220,6 +220,8 @@ void AFreeMovementCharacter::Landed(const FHitResult& Hit)
 {
 	//Player has landed on the ground return gravity to normal
 	GetCharacterMovement()->GravityScale = 1.f;
+
+	UE_LOG(LogTemp, Warning, TEXT("Landed"));
 
 	Super::Landed(Hit);
 }
