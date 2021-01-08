@@ -148,6 +148,9 @@ void AFreeMovementCharacter::Tick(float DeltaTime)
 		}
 		*/
 
+		//Player touch ground, reset gravity
+		GetCharacterMovement()->GravityScale = 1.f;
+
 		//Zoom out when sprinting
 		if (bSprinting && (speed > (BaseWalkSpeed + 50.f)) && (FollowCamera->FieldOfView < 105.f))
 		{
